@@ -56,15 +56,8 @@ class Overwrite {
       if(_element.selectionStart == _element.maxLength) {
         _element.selectionEnd = _element.selectionStart = _element.maxLength - 1;
       }
-      // save the cursor position
-      int cursor = _element.selectionStart;
-      // set value to prefix + new char + suffix
-      _element.value = _element.value.substring(0, _element.selectionStart) + _element.value.substring(_element.selectionStart + 1);
-      // restore cursor
-      _element.selectionEnd = _element.selectionStart = cursor;
-      // TODO if typing over the last character, cursor should not advance.
-      // TODO this would require putting the char in ourselves and e.preventDefault()ing
-      Logger.root.info("length after ${_element.value.length}");
+      // delete the character the new one will replace and clobber selection if it exists
+      _element.setRangeText("", _element.selectionStart, _element.selectionStart+1, "start");
     });
   }
 }
