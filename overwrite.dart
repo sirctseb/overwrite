@@ -96,12 +96,18 @@ class Overwrite {
     });
     _element.onKeyPress.listen((Event e) {
       Logger.root.info("overwrite got key press");
+      // if cursor is at end, move it back one
+      if(_element.selectionStart == _length) {
+        _element.selectionEnd = _element.selectionStart = _length - 1;
+      }
       // save the cursor position
       int cursor = _element.selectionStart;
       // set value to prefix + new char + suffix
       _element.value = _element.value.substring(0, _element.selectionStart) + _element.value.substring(_element.selectionStart + 1);
       // restore cursor
       _element.selectionEnd = _element.selectionStart = cursor;
+      // TODO if typing over the last character, cursor should not advance.
+      // TODO this would require putting the char in ourselves and e.preventDefault()ing
       Logger.root.info("length after ${_element.value.length}");
     });
   }
