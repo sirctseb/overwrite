@@ -55,16 +55,10 @@ class Overwrite {
       Logger.root.info("_length: $_length, new length: ${_element.value.length}");
       if(_element.selectionStart == _element.selectionEnd) { 
         if(e.which == 8) {
-          Logger.root.info("which is backspace, adding a space back in");
-          // save the cursor position
-          int cursor = _element.selectionStart;
-          if(cursor != 0) {
-            // set the value to the existing value with a space in the place after selection start
-            _element.value = "${_element.value.substring(0, _element.selectionStart)} ${_element.value.substring(_element.selectionStart)}";
-            // restore cursor
-            _element.selectionEnd = _element.selectionStart = cursor;
-            // NOTE the backspace will still go through and delete the character before the selection start
-            // NOTE an alternative is to take out this char ourselves and e.preventDefault() to stop the backspace
+          // don't do anything if cursor is at the end
+          if(_element.selectionStart != 0) {
+            // insert a space after the character that will be removed by the backspace
+            _element.setRangeText(" ");
           }
         } else if(e.which == 46) {
           // don't do anything if cursor is at the end
