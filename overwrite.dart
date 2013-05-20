@@ -11,13 +11,27 @@ class Overwrite {
   Overwrite(TextAreaElement this._element) {
     _length = _element.value.length;
     _element.onPaste.listen((Event e) {
-      // TODO handle case where clipboard data is too long for input element
+      Logger.root.info(_element.value);
+      // TODO clean up and document this logic
       // save the cursor location
       int cursor = _element.selectionStart;
       // find the length of the string to be pasted
-      int pasteLength = e.clipboardData.getData("Text").length;
+      String pasteString = e.clipboardData.getData("Text");
+      // truncate clipboard data if it is too long
+      Logger.root.info(pasteString);
+      bool tooLong = pasteString.length > _length - _element.selectionStart; 
+      if(tooLong) {
+        pasteString = pasteString.substring(0, _length - _element.selectionStart);
+      }
       // replace value with existing string minus that many characters
-      _element.value = "${_element.value.substring(0,_element.selectionStart)}${_element.value.substring(_element.selectionStart + pasteLength)}";
+      String original = _element.value;
+      _element.value = "${_element.value.substring(0,_element.selectionStart)}";
+      if(pasteString.length < _length - cursor) {
+        _element.value = _element.value + original.substring(_element.selectionStart + pasteString.length);
+      } else {
+        _element.value = _element.value + pasteString;
+        e.preventDefault();
+      }
       // restore cursor
       _element.selectionEnd = _element.selectionStart = cursor;
     });
