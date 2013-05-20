@@ -80,14 +80,13 @@ class Overwrite {
     });
     _element.onKeyPress.listen((Event e) {
       Logger.root.info("overwrite got key press");
-      if(_element.value.length == _length + 1) {
-        // save the cursor position
-        int cursor = _element.selectionStart;
-        // set value to prefix + new char + suffix
-        _element.value = _element.value.substring(0, _element.selectionStart) + _element.value.substring(_element.selectionStart + 1);
-        // restore cursor
-        _element.selectionEnd = _element.selectionStart = cursor;
-      }
+      // save the cursor position
+      int cursor = _element.selectionStart;
+      // set value to prefix + new char + suffix
+      _element.value = _element.value.substring(0, _element.selectionStart) + _element.value.substring(_element.selectionStart + 1);
+      // restore cursor
+      _element.selectionEnd = _element.selectionStart = cursor;
+      Logger.root.info("length after ${_element.value.length}");
     });
   }
 }
