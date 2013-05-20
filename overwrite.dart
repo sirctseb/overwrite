@@ -11,27 +11,27 @@ class Overwrite {
   Overwrite(TextAreaElement this._element) {
     _length = _element.value.length;
     _element.onPaste.listen((Event e) {
-      Logger.root.info(_element.value);
-      // TODO clean up and document this logic
       // save the cursor location
       int cursor = _element.selectionStart;
-      // find the length of the string to be pasted
+      // get the string to be pasted
       String pasteString = e.clipboardData.getData("Text");
       // truncate clipboard data if it is too long
-      Logger.root.info(pasteString);
-      bool tooLong = pasteString.length > _length - _element.selectionStart; 
-      if(tooLong) {
+      if(pasteString.length > _length - _element.selectionStart) {
         pasteString = pasteString.substring(0, _length - _element.selectionStart);
       }
-      // replace value with existing string minus that many characters
-      String original = _element.value;
-      _element.value = "${_element.value.substring(0,_element.selectionStart)}";
+      // get prefix of existing value, everything up to cursor
+      String prefix = _element.value.substring(0,_element.selectionStart);
+      // get suffix of existing value, everything after the suffx and the length of the paste string
+      String suffix = "";
       if(pasteString.length < _length - cursor) {
-        _element.value = _element.value + original.substring(_element.selectionStart + pasteString.length);
-      } else {
-        _element.value = _element.value + pasteString;
-        e.preventDefault();
+        suffix = _element.value.substring(_element.selectionStart + pasteString.length);
       }
+      // set new contents value
+      _element.value = "$prefix$pasteString$suffix";
+      // stop paste action from going through
+      // NOTE we only strictly need to do this if clipboard contents are too long for input,
+      // NOTE but it is simpler to do it for both cases
+      e.preventDefault();
       // restore cursor
       _element.selectionEnd = _element.selectionStart = cursor;
     });
