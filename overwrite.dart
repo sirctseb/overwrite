@@ -67,15 +67,10 @@ class Overwrite {
             // NOTE an alternative is to take out this char ourselves and e.preventDefault() to stop the backspace
           }
         } else if(e.which == 46) {
-          // save the cursor position
-          int cursor = _element.selectionStart;
-          if(cursor != _length) {
-            // set the value to the existing value with a space in the place of the character to delete
-            _element.value = "${_element.value.substring(0, _element.selectionStart)} ${_element.value.substring(_element.selectionStart+1)}";
-            // restore cursor
-            _element.selectionEnd = _element.selectionStart = cursor;
-            // prevent the delete from going throught because we've already taken out the character
-            e.preventDefault();
+          // don't do anything if cursor is at the end
+          if(_element.selectionStart != _length) {
+            // insert a space after the character that will be deleted by the delete
+            _element.setRangeText(" ", _element.selectionStart+1, _element.selectionStart+1);
           }
         }
       } else {
