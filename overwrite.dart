@@ -10,6 +10,17 @@ class Overwrite {
   /// Create an overwrite object that implements overwrite mode on the input element 
   Overwrite(TextAreaElement this._element) {
     _length = _element.value.length;
+    _element.onPaste.listen((Event e) {
+      // TODO handle case where clipboard data is too long for input element
+      // save the cursor location
+      int cursor = _element.selectionStart;
+      // find the length of the string to be pasted
+      int pasteLength = e.clipboardData.getData("Text").length;
+      // replace value with existing string minus that many characters
+      _element.value = "${_element.value.substring(0,_element.selectionStart)}${_element.value.substring(_element.selectionStart + pasteLength)}";
+      // restore cursor
+      _element.selectionEnd = _element.selectionStart = cursor;
+    });
     _element.onCut.listen((Event e) {
       // save the selection state
       int start = _element.selectionStart;
