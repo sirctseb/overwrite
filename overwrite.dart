@@ -23,6 +23,15 @@ class Overwrite {
         _element.selectionEnd = _element.selectionStart = cursor;
         // NOTE the backspace will still go through and delete the character before the selection start
         // NOTE an alternative is to take out this char ourselves and e.preventDefault() to stop the backspace
+      } else if(e.which == 46) {
+        // save the cursor position
+        int cursor = _element.selectionStart;
+        // set the value to the existing value with a space in the place of the character to delete
+        _element.value = "${_element.value.substring(0, _element.selectionStart)} ${_element.value.substring(_element.selectionStart+1)}";
+        // restore cursor
+        _element.selectionEnd = _element.selectionStart = cursor;
+        // prevent the delete from going throught because we've already taken out the character
+        e.preventDefault();
       }
     });
     _element.onKeyPress.listen((Event e) {
