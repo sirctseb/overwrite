@@ -69,19 +69,12 @@ class Overwrite {
         }
       } else {
         if(e.which == 8 || e.which == 46) {
-          // save the cursor position
-          int cursor = _element.selectionStart;
-          // create a string to fill in places
+          // create a string of spaces the same length as the text that will be deleted
           String fillString = new String.fromCharCodes(
               new List<int>.filled(_element.selectionEnd - _element.selectionStart, " ".codeUnitAt(0))
               );
-          // set the value to the existing value with spaces in the selected places
-          _element.value = "${_element.value.substring(0, _element.selectionStart)}$fillString${_element.value.substring(_element.selectionEnd)}";
-          // restore cursor
-          _element.selectionEnd = _element.selectionStart = cursor;
-          // stop backspace or delete from actually going
-          e.preventDefault();
-          // NOTE we could alternately just add the spaces and let the real backspace or delete remove the selected text
+          // add a string of spaces after the string that will be deleted and with the same length
+          _element.setRangeText(fillString, _element.selectionEnd, _element.selectionEnd);
         }
       }
     });
