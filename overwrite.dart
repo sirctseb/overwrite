@@ -69,12 +69,14 @@ class Overwrite {
         } else if(e.which == 46) {
           // save the cursor position
           int cursor = _element.selectionStart;
-          // set the value to the existing value with a space in the place of the character to delete
-          _element.value = "${_element.value.substring(0, _element.selectionStart)} ${_element.value.substring(_element.selectionStart+1)}";
-          // restore cursor
-          _element.selectionEnd = _element.selectionStart = cursor;
-          // prevent the delete from going throught because we've already taken out the character
-          e.preventDefault();
+          if(cursor != _length) {
+            // set the value to the existing value with a space in the place of the character to delete
+            _element.value = "${_element.value.substring(0, _element.selectionStart)} ${_element.value.substring(_element.selectionStart+1)}";
+            // restore cursor
+            _element.selectionEnd = _element.selectionStart = cursor;
+            // prevent the delete from going throught because we've already taken out the character
+            e.preventDefault();
+          }
         }
       } else {
         if(e.which == 8 || e.which == 46) {
