@@ -10,6 +10,21 @@ class Overwrite {
   /// Create an overwrite object that implements overwrite mode on the input element 
   Overwrite(TextAreaElement this._element) {
     _length = _element.value.length;
+    _element.onCut.listen((Event e) {
+      // save the selection state
+      int start = _element.selectionStart;
+      int end = _element.selectionEnd;
+      // create a string to fill in places
+      String fillString = new String.fromCharCodes(
+          new List<int>.filled(_element.selectionEnd - _element.selectionStart, " ".codeUnitAt(0))
+      );
+      // set the value to the existing value with spaces added in
+      _element.value = "${_element.value.substring(0, _element.selectionEnd)}$fillString${_element.value.substring(_element.selectionEnd)}";
+      // restore selection
+      _element.selectionStart = start;
+      _element.selectionEnd = end;
+      // NOTE cut will go through to remove selected text
+    });
     _element.onKeyDown.listen((Event e) {
       Logger.root.info("overwrite got key down which: ${e.which}");
       Logger.root.info("_length: $_length, new length: ${_element.value.length}");
