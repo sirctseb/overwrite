@@ -6,11 +6,6 @@ class Overwrite {
   TextAreaElement _element;
   // the length of the text in the element
   int _length;
-  // the text on the element
-  String _text;
-  String _newText;
-  bool _addChar = false;
-  int _cursor;
   
   /// Create an overwrite object that implements overwrite mode on the input element 
   Overwrite(TextAreaElement this._element) {
