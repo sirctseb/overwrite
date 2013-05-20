@@ -13,25 +13,43 @@ class Overwrite {
     _element.onKeyDown.listen((Event e) {
       Logger.root.info("overwrite got key down which: ${e.which}");
       Logger.root.info("_length: $_length, new length: ${_element.value.length}");
-      if(e.which == 8) {
-        Logger.root.info("which is backspace, adding a space back in");
-        // save the cursor position
-        int cursor = _element.selectionStart;
-        // set the value to the existing value with a space in the place after selection start
-        _element.value = "${_element.value.substring(0, _element.selectionStart)} ${_element.value.substring(_element.selectionStart)}";
-        // restore cursor
-        _element.selectionEnd = _element.selectionStart = cursor;
-        // NOTE the backspace will still go through and delete the character before the selection start
-        // NOTE an alternative is to take out this char ourselves and e.preventDefault() to stop the backspace
-      } else if(e.which == 46) {
-        // save the cursor position
-        int cursor = _element.selectionStart;
-        // set the value to the existing value with a space in the place of the character to delete
-        _element.value = "${_element.value.substring(0, _element.selectionStart)} ${_element.value.substring(_element.selectionStart+1)}";
-        // restore cursor
-        _element.selectionEnd = _element.selectionStart = cursor;
-        // prevent the delete from going throught because we've already taken out the character
-        e.preventDefault();
+      if(_element.selectionStart == _element.selectionEnd) { 
+        if(e.which == 8) {
+          Logger.root.info("which is backspace, adding a space back in");
+          // save the cursor position
+          int cursor = _element.selectionStart;
+          // set the value to the existing value with a space in the place after selection start
+          _element.value = "${_element.value.substring(0, _element.selectionStart)} ${_element.value.substring(_element.selectionStart)}";
+          // restore cursor
+          _element.selectionEnd = _element.selectionStart = cursor;
+          // NOTE the backspace will still go through and delete the character before the selection start
+          // NOTE an alternative is to take out this char ourselves and e.preventDefault() to stop the backspace
+        } else if(e.which == 46) {
+          // save the cursor position
+          int cursor = _element.selectionStart;
+          // set the value to the existing value with a space in the place of the character to delete
+          _element.value = "${_element.value.substring(0, _element.selectionStart)} ${_element.value.substring(_element.selectionStart+1)}";
+          // restore cursor
+          _element.selectionEnd = _element.selectionStart = cursor;
+          // prevent the delete from going throught because we've already taken out the character
+          e.preventDefault();
+        }
+      } else {
+        if(e.which == 8 || e.which == 46) {
+          // save the cursor position
+          int cursor = _element.selectionStart;
+          // create a string to fill in places
+          String fillString = new String.fromCharCodes(
+              new List<int>.filled(_element.selectionEnd - _element.selectionStart, " ".codeUnitAt(0))
+              );
+          // set the value to the existing value with spaces in the selected places
+          _element.value = "${_element.value.substring(0, _element.selectionStart)}$fillString${_element.value.substring(_element.selectionEnd)}";
+          // restore cursor
+          _element.selectionEnd = _element.selectionStart = cursor;
+          // stop backspace or delete from actually going
+          e.preventDefault();
+          // NOTE we could alternately just add the spaces and let the real backspace or delete remove the selected text
+        }
       }
     });
     _element.onKeyPress.listen((Event e) {
