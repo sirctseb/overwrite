@@ -23,8 +23,6 @@ class Overwrite {
       _element.setRangeText(fillString, _element.selectionEnd, _element.selectionEnd);
     });
     _element.onKeyDown.listen((Event e) {
-      Logger.root.info("overwrite got key down which: ${e.which}");
-      Logger.root.info("_length: ${_element.maxLength}, new length: ${_element.value.length}");
       if(_element.selectionStart == _element.selectionEnd) { 
         if(e.which == 8) {
           // don't do anything if cursor is at the end
@@ -51,7 +49,6 @@ class Overwrite {
       }
     });
     _element.onKeyPress.listen((Event e) {
-      Logger.root.info("overwrite got key press");
       // if cursor is at end, move it back one
       if(_element.selectionStart == _element.maxLength) {
         _element.selectionEnd = _element.selectionStart = _element.maxLength - 1;
