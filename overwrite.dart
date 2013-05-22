@@ -4,12 +4,27 @@ part of Tabasci;
 class Overwrite {
   // the element to implement overwrite mode in
   TextAreaElement _element;
+  // flag to indicate the width has been set initially
+  bool _initWidth = false;
+  // an element used to calculate text width
+  DivElement widthDiv;
   
   /// Create an overwrite object that implements overwrite mode on the input element 
   Overwrite(TextAreaElement this._element) {
-    // set max length of element text to current length
-    // TODO this should be set more intelligently
-    _element.maxLength = _element.value.length;
+
+    // create div for determining text width
+    widthDiv = new DivElement()
+      ..classes.add("text-width-div")
+      ..text = new String.fromCharCodes(new List<int>.filled(_element.value.length, "x".codeUnitAt(0)));
+    // add div to body
+    document.body.children.add(widthDiv);
+    _element.onFocus.listen((e) {
+      // pad contents if we haven't yet
+      if(!_initWidth) {
+        _updateWidth();
+        _initWidth = true;
+      }
+    });
     _element.onPaste.listen((Event e) {
       // remove enough characters to make room for pasted text
       _element.setRangeText("", _element.selectionStart, _element.selectionStart + e.clipboardData.getData("Text").length, "start");
@@ -56,5 +71,17 @@ class Overwrite {
       // delete the character the new one will replace and clobber selection if it exists
       _element.setRangeText("", _element.selectionStart, _element.selectionStart+1, "start");
     });
+  }
+  
+  /// Pad the contents of the input element to make the contents as wide as the element
+  _updateWidth() {
+    // increase length of text in widthdiv until it is as wide as input box
+    while(widthDiv.offsetWidth < _element.clientWidth) {
+      widthDiv.text = "${widthDiv.text}x";
+    }
+    // pad input value to make correct length
+    _element.value = StringExtension.padString(_element.value, " ", widthDiv.text.length);
+    // set maxlength to length
+    _element.maxLength = _element.value.length;
   }
 }
