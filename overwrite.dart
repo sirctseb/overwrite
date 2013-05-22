@@ -19,11 +19,8 @@ class Overwrite {
     // add div to body
     document.body.children.add(widthDiv);
     _element.onFocus.listen((e) {
-      // pad contents if we haven't yet
-      if(!_initWidth) {
-        _updateWidth();
-        _initWidth = true;
-      }
+      // pad contents
+      _updateWidth();
     });
     _element.onPaste.listen((Event e) {
       // remove enough characters to make room for pasted text
