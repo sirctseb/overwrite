@@ -7,13 +7,13 @@ class Overwrite {
   // flag to indicate the width has been set initially
   bool _initWidth = false;
   // an element used to calculate text width
-  DivElement widthDiv;
+  PreElement widthDiv;
   
   /// Create an overwrite object that implements overwrite mode on the input element 
   Overwrite(TextAreaElement this._element) {
 
     // create div for determining text width
-    widthDiv = new DivElement()
+    widthDiv = new PreElement()
       ..classes.add("text-width-div");
     // add div to body
     document.body.children.add(widthDiv);
