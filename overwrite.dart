@@ -73,12 +73,16 @@ class Overwrite {
   /// Pad the contents of the input element to make the contents as wide as the element
   _updateWidth() {
     // increase length of text in widthdiv until it is as wide as input box
+    bool madeLonger = false;
     while(widthDiv.offsetWidth < _element.clientWidth) {
       widthDiv.text = "${widthDiv.text}x";
+      madeLonger = true;
     }
     // pad input value to make correct length
-    _element.value = StringExtension.padString(_element.value, " ", widthDiv.text.length);
-    // set maxlength to length
-    _element.maxLength = _element.value.length;
+    if(madeLonger) {
+      _element.value = StringExtension.padString(_element.value, " ", widthDiv.text.length);
+      // set maxlength to length
+      _element.maxLength = _element.value.length;
+    }
   }
 }
