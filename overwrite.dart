@@ -14,8 +14,7 @@ class Overwrite {
 
     // create div for determining text width
     widthDiv = new DivElement()
-      ..classes.add("text-width-div")
-      ..text = new String.fromCharCodes(new List<int>.filled(_element.value.length, "x".codeUnitAt(0)));
+      ..classes.add("text-width-div");
     // add div to body
     document.body.children.add(widthDiv);
     _element.onFocus.listen((e) {
