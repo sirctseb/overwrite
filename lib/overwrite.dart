@@ -43,7 +43,7 @@ class Overwrite {
     });
     
     // On key down, add spaces for every character deleted on backspace and delete key
-    _element.onKeyDown.listen((Event e) {
+    _element.onKeyDown.listen((KeyboardEvent e) {
       // if start and end are equal, there is no selection
       if(_element.selectionStart == _element.selectionEnd) { 
         if(e.which == 8) {
