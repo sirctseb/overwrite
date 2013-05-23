@@ -7,16 +7,18 @@ class Overwrite {
   // flag to indicate the width has been set initially
   bool _initWidth = false;
   // an element used to calculate text width
-  PreElement widthDiv;
+  PreElement _widthEl;
   
   /// Create an overwrite object that implements overwrite mode on the input element 
   Overwrite(TextAreaElement this._element) {
-
-    // create div for determining text width
-    widthDiv = new PreElement()
-      ..classes.add("text-width-div");
-    // add div to body
-    document.body.children.add(widthDiv);
+    
+    // create element for determining text width
+    _widthEl = new PreElement()
+      // set style elements to make invisible
+      ..style.position = "absolute"
+      ..style.opacity = "0";
+    // add element to body
+    document.body.children.add(_widthEl);
     _element.onFocus.listen((e) {
       // pad contents
       _updateWidth();
@@ -71,15 +73,21 @@ class Overwrite {
   
   /// Pad the contents of the input element to make the contents as wide as the element
   _updateWidth() {
-    // increase length of text in widthdiv until it is as wide as input box
+    
+    // copy font style from element
+    _widthEl.style.font = _element.getComputedStyle().font;
+    // put element value in hidden element
+    _widthEl.text = _element.value;
+
+    // increase length of text in width element until it is as wide as input box
     bool madeLonger = false;
-    while(widthDiv.offsetWidth < _element.clientWidth) {
-      widthDiv.text = "${widthDiv.text}x";
+    while(_widthEl.clientWidth < _element.clientWidth) {
+      _widthEl.text = "${_widthEl.text} ";
       madeLonger = true;
     }
     // pad input value to make correct length
     if(madeLonger) {
-      _element.value = StringExtension.padString(_element.value, " ", widthDiv.text.length);
+      _element.value = StringExtension.padString(_element.value, " ", _widthEl.text.length);
       // set maxlength to length
       _element.maxLength = _element.value.length;
     }
