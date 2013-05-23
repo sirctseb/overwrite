@@ -91,14 +91,13 @@ class Overwrite {
     _widthEl.text = _element.value;
 
     // increase length of text in width element until it is as wide as input box
-    bool madeLonger = false;
     while(_widthEl.clientWidth < _element.clientWidth) {
       _widthEl.text = "${_widthEl.text} ";
-      madeLonger = true;
     }
-    // pad input value to make correct length
-    if(madeLonger) {
-      _element.value = StringExtension.padString(_element.value, " ", _widthEl.text.length);
+    // if new text is longer, update the input element value
+    if(_widthEl.text.length > _element.value.length + 1) {
+      // set the new value of input element
+      _element.value = _widthEl.text.substring(0, _widthEl.text.length - 1);
       // set maxlength to length
       _element.maxLength = _element.value.length;
     }
