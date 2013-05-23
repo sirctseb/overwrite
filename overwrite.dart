@@ -18,14 +18,20 @@ class Overwrite {
       ..style.opacity = "0";
     // add element to body
     document.body.children.add(_widthEl);
+    
+    // On focus, update the width of the element to fill available space
     _element.onFocus.listen((e) {
       // pad contents
       _updateWidth();
     });
+    
+    // On paste, remove enough characters to make room for the text that will be pasted
     _element.onPaste.listen((Event e) {
       // remove enough characters to make room for pasted text
       _element.setRangeText("", _element.selectionStart, _element.selectionStart + e.clipboardData.getData("Text").length, "start");
     });
+    
+    // On cut, add in enough spaces to compensate for the text that will be removed
     _element.onCut.listen((Event e) {
       // create a string of spaces the same length as the text that will be cut
       String fillString = new String.fromCharCodes(
@@ -34,7 +40,10 @@ class Overwrite {
       // add a string of spaces after the string that will be cut
       _element.setRangeText(fillString, _element.selectionEnd, _element.selectionEnd);
     });
+    
+    // On key down, add spaces for every character deleted on backspace and delete key
     _element.onKeyDown.listen((Event e) {
+      // if start and end are equal, there is no selection
       if(_element.selectionStart == _element.selectionEnd) { 
         if(e.which == 8) {
           // don't do anything if cursor is at the end
@@ -50,6 +59,7 @@ class Overwrite {
           }
         }
       } else {
+      // if start and end are not equal, there is a selection
         if(e.which == 8 || e.which == 46) {
           // create a string of spaces the same length as the text that will be deleted
           String fillString = new String.fromCharCodes(
@@ -60,6 +70,8 @@ class Overwrite {
         }
       }
     });
+    
+    // On printable character, delete the character that will be overwritten
     _element.onKeyPress.listen((Event e) {
       // if cursor is at end, move it back one
       if(_element.selectionStart == _element.maxLength) {
