@@ -1,11 +1,10 @@
 /** overwrite.dart implements overwrite mode in a text input element */
 part of Tabasci;
 
+/// A class to implement overwrite mode in a text area element
 class Overwrite {
   // the element to implement overwrite mode in
   TextAreaElement _element;
-  // flag to indicate the width has been set initially
-  bool _initWidth = false;
   // an element used to calculate text width
   PreElement _widthEl;
   
@@ -71,7 +70,7 @@ class Overwrite {
     });
   }
   
-  /// Pad the contents of the input element to make the contents as wide as the element
+  // Pad the contents of the input element to make the contents as wide as the element
   _updateWidth() {
     
     // copy font style from element
