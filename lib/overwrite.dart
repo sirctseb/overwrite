@@ -1,5 +1,6 @@
 /** overwrite.dart implements overwrite mode in a text input element */
-part of Tabasci;
+library overwrite;
+import "dart:html";
 
 /// A class to implement overwrite mode in a text area element
 class Overwrite {
