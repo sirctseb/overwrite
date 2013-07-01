@@ -29,9 +29,11 @@ class OverwriteElement {
       var curText = _element.value;
       // call real handler
       fun(e);
-      // add event to the stream
+      // add event to the stream if the text changed
       // TODO put type of change or event in event class?
-      _streamController.add(new OverwriteEvent(curText, _element.value));
+      if(curText != _element.value) { 
+        _streamController.add(new OverwriteEvent(curText, _element.value));
+      }
     };
   }
   
