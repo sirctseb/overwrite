@@ -8,7 +8,7 @@ main() {
   TextAreaElement _ta = query("textarea");
   
   // put overwrite on the text area
-  new Overwrite(_ta);
+  setInputMode(_ta, OverwriteMode.OVERWRITE);
 
   test("Initial padding", () {
     _ta.focus();
