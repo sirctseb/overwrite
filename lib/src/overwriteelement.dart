@@ -38,7 +38,7 @@ class OverwriteElement {
   // Create an overwrite object that implements overwrite mode on the input element 
   OverwriteElement(TextAreaElement this._element) {
     // create a stream controller for the element
-    StreamController<OverwriteEvent> _streamController = new StreamController<OverwriteEvent>();
+    _streamController = new StreamController<OverwriteEvent>();
     
     // create element for determining text width
     _widthEl = new PreElement()
