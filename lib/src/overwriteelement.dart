@@ -31,9 +31,14 @@ class OverwriteElement {
       fun(e);
       // add event to the stream if the text changed
       // TODO put type of change or event in event class?
-      if(curText != _element.value) { 
-        _streamController.add(new OverwriteEvent(curText, _element.value));
-      }
+      // delay check by 1 ms so that value member of element updates
+      // TODO we could avoid having to use the timer if we forced fun to return
+      // TODO the new string
+      new Timer(const Duration(milliseconds:1), () {
+        if(curText != _element.value) {
+          _streamController.add(new OverwriteEvent(curText, _element.value));
+        }
+      });
     };
   }
   
