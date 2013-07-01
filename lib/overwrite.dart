@@ -11,19 +11,35 @@ part "src/overwriteelement.dart";
  * with spaces so that it fits the width of the element and handles editing events
  * to implement overwrite mode.
  * Setting the mode to [OverwriteMode.INSERT] leaves the contents as they are and
- * user interaction with the element is returned to normal
+ * user interaction with the element is returned to normal.
  */
 // TODO delete padded spaces when setting to INSERT?
 
 /// Set the input mode on a [TextAreaElement]
-void setInputMode(TextAreaElement element, OverwriteMode mode) {
+/// returns a [Stream<OverwriteEvent>] that fires when changes are made to the text
+Stream<OverwriteEvent> setInputMode(TextAreaElement element, OverwriteMode mode) {
   // TODO don't even bother creating the object if it doesn't exist yet and we're setting to INSERT?
   // create an overwrite object if it doesn't exist
   OverwriteElement._objects.putIfAbsent(element.hashCode, () => new OverwriteElement(element));
   // set the mode
   OverwriteElement._objects[element.hashCode].setInputMode(mode);
+  return OverwriteElement._objects[element.hashCode]._streamController.stream;
 }
 
+/// Get the [Stream<OverwriteEvent>] for a given element
+/// returns null if element has never been set to overwrite mode
+Stream<OverwriteEvent> getOverwriteStream(TextAreaElement element) {
+  return OverwriteElement._objects.containsKey(element.hashCode) ?
+        OverwriteElement._objects[element.hashCode]._streamController.stream :
+        null;
+}
+
+/// Event class for text change event stream
+class OverwriteEvent {
+  final String oldText;
+  final String newText;
+  OverwriteEvent(String this.oldText, String this.newText);
+}
 /// Enumeration of overwrite modes
 class OverwriteMode {
   static const OVERWRITE = const OverwriteMode._(0);
