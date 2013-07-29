@@ -6,18 +6,18 @@ class OverwriteElement {
   static Map<int, OverwriteElement> _objects = new Map<int, OverwriteElement>();
   // a stream controller for change events on the element
   StreamController _streamController;
-  
+
   // The element to implement overwrite mode in
   TextAreaElement _element;
   // An element used to calculate text width
   PreElement _widthEl;
-  
+
   StreamSubscription _focusSub;
   StreamSubscription _pasteSub;
   StreamSubscription _cutSub;
   StreamSubscription _downSub;
   StreamSubscription _pressSub;
-  
+
   // The current insert mode
   OverwriteMode _mode = OverwriteMode.OVERWRITE;
 
@@ -41,12 +41,12 @@ class OverwriteElement {
       });
     };
   }
-  
-  // Create an overwrite object that implements overwrite mode on the input element 
+
+  // Create an overwrite object that implements overwrite mode on the input element
   OverwriteElement(TextAreaElement this._element) {
     // create a stream controller for the element
     _streamController = new StreamController<OverwriteEvent>();
-    
+
     // create element for determining text width
     _widthEl = new PreElement()
       // set style elements to make invisible
@@ -54,7 +54,7 @@ class OverwriteElement {
       ..style.opacity = "0";
     // add element to body
     document.body.children.add(_widthEl);
-        
+
     // On focus, update the width of the element to fill available space
     _focusSub = _element.onFocus.listen(_changeEventFunction((e) {
       // pad contents
@@ -64,9 +64,9 @@ class OverwriteElement {
     // On paste, remove enough characters to make room for the text that will be pasted
     _pasteSub = _element.onPaste.listen(_changeEventFunction((Event e) {
       // remove enough characters to make room for pasted text
-      _element.setRangeText("", _element.selectionStart, _element.selectionStart + e.clipboardData.getData("Text").length, "start");
+      _element.setRangeText("", start: _element.selectionStart, end: _element.selectionStart + e.clipboardData.getData("Text").length, selectionMode: "start");
     }));
-    
+
     // On cut, add in enough spaces to compensate for the text that will be removed
     _cutSub = _element.onCut.listen(_changeEventFunction((Event e) {
       // create a string of spaces the same length as the text that will be cut
@@ -74,13 +74,13 @@ class OverwriteElement {
           new List<int>.filled(_element.selectionEnd - _element.selectionStart, " ".codeUnitAt(0))
       );
       // add a string of spaces after the string that will be cut
-      _element.setRangeText(fillString, _element.selectionEnd, _element.selectionEnd);
+      _element.setRangeText(fillString, start: _element.selectionEnd, end: _element.selectionEnd);
     }));
-    
+
     // On key down, add spaces for every character deleted on backspace and delete key
     _downSub = _element.onKeyDown.listen(_changeEventFunction((KeyboardEvent e) {
       // if start and end are equal, there is no selection
-      if(_element.selectionStart == _element.selectionEnd) { 
+      if(_element.selectionStart == _element.selectionEnd) {
         if(e.which == 8) {
           // don't do anything if cursor is at the end
           if(_element.selectionStart != 0) {
@@ -91,7 +91,7 @@ class OverwriteElement {
           // don't do anything if cursor is at the end
           if(_element.selectionStart != _element.maxLength) {
             // insert a space after the character that will be deleted by the delete
-            _element.setRangeText(" ", _element.selectionStart+1, _element.selectionStart+1);
+            _element.setRangeText(" ", start: _element.selectionStart+1, end: _element.selectionStart+1);
           }
         }
       } else {
@@ -102,11 +102,11 @@ class OverwriteElement {
               new List<int>.filled(_element.selectionEnd - _element.selectionStart, " ".codeUnitAt(0))
               );
           // add a string of spaces after the string that will be deleted and with the same length
-          _element.setRangeText(fillString, _element.selectionEnd, _element.selectionEnd);
+          _element.setRangeText(fillString, start: _element.selectionEnd, end: _element.selectionEnd);
         }
       }
     }));
-    
+
     // On printable character, delete the character that will be overwritten
     _pressSub = _element.onKeyPress.listen(_changeEventFunction((Event e) {
       // if cursor is at end, move it back one
@@ -114,10 +114,10 @@ class OverwriteElement {
         _element.selectionEnd = _element.selectionStart = _element.maxLength - 1;
       }
       // delete the character the new one will replace and clobber selection if it exists
-      _element.setRangeText("", _element.selectionStart, _element.selectionStart+1, "start");
+      _element.setRangeText("", start: _element.selectionStart, end: _element.selectionStart+1, selectionMode: "start");
     }));
   }
-  
+
   // Set the input mode
   void setInputMode(OverwriteMode mode) {
     // don't do anything if we're already at that mode
@@ -140,10 +140,10 @@ class OverwriteElement {
       _pressSub.pause();
     }
   }
-  
+
   // Pad the contents of the input element to make the contents as wide as the element
   void _updateWidth() {
-    
+
     // copy font style from element
     _widthEl.style.font = _element.getComputedStyle().font;
     // put element value in hidden element
