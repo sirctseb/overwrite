@@ -3,9 +3,11 @@ overwrite
 
 Overwrite mode for textarea elements in Dart
 
-To put a textarea element into overwrite mode, construct an Overwrite object with the element.
+To put a textarea element into overwrite mode:
 
-    new Overwrite(query("textarea"));
+```dart
+    setInputMode(element, OverwriteMode.OVERWRITE);
+```
 
 New text typed into the textarea will overwrite the existing content instead of inserting it.
 
