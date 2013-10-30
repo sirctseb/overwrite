@@ -3,6 +3,7 @@ version: 0.2.6-dev
 author: Christopher Best <bestchris@gmail.com>
 description: Overwrite mode for text area elements in Dart
 homepage: https://github.com/sirctseb/overwrite
+documentation: http://sirctseb.github.io/overwrite
 dev_dependencies:
   browser: any
   unittest: any
