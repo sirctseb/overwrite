@@ -36,9 +36,15 @@ Stream<OverwriteEvent> getOverwriteStream(TextAreaElement element) {
 
 /// Event class for text change event stream
 class OverwriteEvent {
+  // fired when whitespace is added to fille the width of the element
+  static final String PAD = 'pad';
+  // fired when the user edits the contents
+  static final String EDIT = 'edit';
+
+  final String type;
   final String oldText;
   final String newText;
-  OverwriteEvent(String this.oldText, String this.newText);
+  OverwriteEvent(String this.oldText, String this.newText, String this.type);
 }
 /// Enumeration of overwrite modes
 class OverwriteMode {

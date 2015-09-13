@@ -23,7 +23,7 @@ class OverwriteElement {
 
   // TODO types for this?
   // create a handler that generates an event based on the supplied function
-  dynamic _changeEventFunction(dynamic fun) {
+  dynamic _changeEventFunction(dynamic fun, String type) {
     return (Event e) {
       // save current text
       var curText = _element.value;
@@ -36,7 +36,7 @@ class OverwriteElement {
         // TODO the new string
         new Timer(const Duration(milliseconds:1), () {
           if(curText != _element.value) {
-            _streamController.add(new OverwriteEvent(curText, _element.value));
+            _streamController.add(new OverwriteEvent(curText, _element.value, type));
           }
         });
       }
@@ -61,14 +61,14 @@ class OverwriteElement {
       // pad contents
       _updateWidth();
       return true;
-    }));
+    }, OverwriteEvent.PAD));
 
     // On paste, remove enough characters to make room for the text that will be pasted
     _pasteSub = _element.onPaste.listen(_changeEventFunction((Event e) {
       // remove enough characters to make room for pasted text
       _element.setRangeText("", start: _element.selectionStart, end: _element.selectionStart + e.clipboardData.getData("Text").length, selectionMode: "start");
       return true;
-    }));
+    }, OverwriteEvent.EDIT));
 
     // On cut, add in enough spaces to compensate for the text that will be removed
     _cutSub = _element.onCut.listen(_changeEventFunction((Event e) {
@@ -79,7 +79,7 @@ class OverwriteElement {
       // add a string of spaces after the string that will be cut
       _element.setRangeText(fillString, start: _element.selectionEnd, end: _element.selectionEnd);
       return true;
-    }));
+    }, OverwriteEvent.EDIT));
 
     // On key down, add spaces for every character deleted on backspace and delete key
     _downSub = _element.onKeyDown.listen(_changeEventFunction((KeyboardEvent e) {
@@ -113,7 +113,7 @@ class OverwriteElement {
         }
       }
       return false;
-    }));
+    }, OverwriteEvent.EDIT));
 
     // On printable character, delete the character that will be overwritten
     _pressSub = _element.onKeyPress.listen(_changeEventFunction((Event e) {
@@ -124,7 +124,7 @@ class OverwriteElement {
       // delete the character the new one will replace and clobber selection if it exists
       _element.setRangeText("", start: _element.selectionStart, end: _element.selectionStart+1, selectionMode: "start");
       return true;
-    }));
+    }, OverwriteEvent.EDIT));
   }
 
   // Set the input mode
