@@ -116,7 +116,11 @@ class OverwriteElement {
     }, OverwriteEvent.EDIT));
 
     // On printable character, delete the character that will be overwritten
-    _pressSub = _element.onKeyPress.listen(_changeEventFunction((Event e) {
+    _pressSub = _element.onKeyPress.listen(_changeEventFunction((KeyboardEvent e) {
+      if (e.which == 13) {
+        e.preventDefault();
+        return false;
+      }
       // if cursor is at end, move it back one
       if(_element.selectionStart == _element.maxLength) {
         _element.selectionEnd = _element.selectionStart = _element.maxLength - 1;
