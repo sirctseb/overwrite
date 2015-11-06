@@ -17,10 +17,12 @@ part "src/overwriteelement.dart";
 
 /// Set the input mode on a [TextAreaElement]
 /// returns a [Stream<OverwriteEvent>] that fires when changes are made to the text
-Stream<OverwriteEvent> setInputMode(TextAreaElement element, OverwriteMode mode) {
+Stream<OverwriteEvent> setInputMode(
+    TextAreaElement element, OverwriteMode mode) {
   // TODO don't even bother creating the object if it doesn't exist yet and we're setting to INSERT?
   // create an overwrite object if it doesn't exist
-  OverwriteElement._objects.putIfAbsent(element.hashCode, () => new OverwriteElement(element));
+  OverwriteElement._objects
+      .putIfAbsent(element.hashCode, () => new OverwriteElement(element));
   // set the mode
   OverwriteElement._objects[element.hashCode].setInputMode(mode);
   return OverwriteElement._objects[element.hashCode]._streamController.stream;
@@ -29,9 +31,9 @@ Stream<OverwriteEvent> setInputMode(TextAreaElement element, OverwriteMode mode)
 /// Get the [Stream<OverwriteEvent>] for a given element
 /// returns null if element has never been set to overwrite mode
 Stream<OverwriteEvent> getOverwriteStream(TextAreaElement element) {
-  return OverwriteElement._objects.containsKey(element.hashCode) ?
-        OverwriteElement._objects[element.hashCode]._streamController.stream :
-        null;
+  return OverwriteElement._objects.containsKey(element.hashCode)
+      ? OverwriteElement._objects[element.hashCode]._streamController.stream
+      : null;
 }
 
 /// Event class for text change event stream
@@ -46,13 +48,14 @@ class OverwriteEvent {
   final String newText;
   OverwriteEvent(String this.oldText, String this.newText, String this.type);
 }
+
 /// Enumeration of overwrite modes
 class OverwriteMode {
   static const OVERWRITE = const OverwriteMode._(0);
   static const INSERT = const OverwriteMode._(1);
-  
+
   static get values => [OVERWRITE, INSERT];
-  
+
   final int _value;
   const OverwriteMode._(this._value);
 }

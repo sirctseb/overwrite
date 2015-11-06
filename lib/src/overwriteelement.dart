@@ -28,15 +28,16 @@ class OverwriteElement {
       // save current text
       var curText = _element.value;
       // call real handler
-      if(fun(e)) {
+      if (fun(e)) {
         // add event to the stream if the text changed
         // TODO put type of change or event in event class?
         // delay check by 1 ms so that value member of element updates
         // TODO we could avoid having to use the timer if we forced fun to return
         // TODO the new string
-        new Timer(const Duration(milliseconds:1), () {
-          if(curText != _element.value) {
-            _streamController.add(new OverwriteEvent(curText, _element.value, type));
+        new Timer(const Duration(milliseconds: 1), () {
+          if (curText != _element.value) {
+            _streamController
+                .add(new OverwriteEvent(curText, _element.value, type));
           }
         });
       }
@@ -66,49 +67,56 @@ class OverwriteElement {
     // On paste, remove enough characters to make room for the text that will be pasted
     _pasteSub = _element.onPaste.listen(_changeEventFunction((Event e) {
       // remove enough characters to make room for pasted text
-      _element.setRangeText("", start: _element.selectionStart, end: _element.selectionStart + e.clipboardData.getData("Text").length, selectionMode: "start");
+      _element.setRangeText("",
+          start: _element.selectionStart,
+          end: _element.selectionStart + e.clipboardData.getData("Text").length,
+          selectionMode: "start");
       return true;
     }, OverwriteEvent.EDIT));
 
     // On cut, add in enough spaces to compensate for the text that will be removed
     _cutSub = _element.onCut.listen(_changeEventFunction((Event e) {
       // create a string of spaces the same length as the text that will be cut
-      String fillString = new String.fromCharCodes(
-          new List<int>.filled(_element.selectionEnd - _element.selectionStart, " ".codeUnitAt(0))
-      );
+      String fillString = new String.fromCharCodes(new List<int>.filled(
+          _element.selectionEnd - _element.selectionStart, " ".codeUnitAt(0)));
       // add a string of spaces after the string that will be cut
-      _element.setRangeText(fillString, start: _element.selectionEnd, end: _element.selectionEnd);
+      _element.setRangeText(fillString,
+          start: _element.selectionEnd, end: _element.selectionEnd);
       return true;
     }, OverwriteEvent.EDIT));
 
     // On key down, add spaces for every character deleted on backspace and delete key
-    _downSub = _element.onKeyDown.listen(_changeEventFunction((KeyboardEvent e) {
+    _downSub =
+        _element.onKeyDown.listen(_changeEventFunction((KeyboardEvent e) {
       // if start and end are equal, there is no selection
-      if(_element.selectionStart == _element.selectionEnd) {
-        if(e.which == 8) {
+      if (_element.selectionStart == _element.selectionEnd) {
+        if (e.which == 8) {
           // don't do anything if cursor is at the end
-          if(_element.selectionStart != 0) {
+          if (_element.selectionStart != 0) {
             // insert a space after the character that will be removed by the backspace
             _element.setRangeText(" ");
             return true;
           }
-        } else if(e.which == 46) {
+        } else if (e.which == 46) {
           // don't do anything if cursor is at the end
-          if(_element.selectionStart != _element.maxLength) {
+          if (_element.selectionStart != _element.maxLength) {
             // insert a space after the character that will be deleted by the delete
-            _element.setRangeText(" ", start: _element.selectionStart+1, end: _element.selectionStart+1);
+            _element.setRangeText(" ",
+                start: _element.selectionStart + 1,
+                end: _element.selectionStart + 1);
             return true;
           }
         }
       } else {
         // if start and end are not equal, there is a selection
-        if(e.which == 8 || e.which == 46) {
+        if (e.which == 8 || e.which == 46) {
           // create a string of spaces the same length as the text that will be deleted
-          String fillString = new String.fromCharCodes(
-              new List<int>.filled(_element.selectionEnd - _element.selectionStart, " ".codeUnitAt(0))
-              );
+          String fillString = new String.fromCharCodes(new List<int>.filled(
+              _element.selectionEnd - _element.selectionStart,
+              " ".codeUnitAt(0)));
           // add a string of spaces after the string that will be deleted and with the same length
-          _element.setRangeText(fillString, start: _element.selectionEnd, end: _element.selectionEnd);
+          _element.setRangeText(fillString,
+              start: _element.selectionEnd, end: _element.selectionEnd);
           return true;
         }
       }
@@ -116,17 +124,22 @@ class OverwriteElement {
     }, OverwriteEvent.EDIT));
 
     // On printable character, delete the character that will be overwritten
-    _pressSub = _element.onKeyPress.listen(_changeEventFunction((KeyboardEvent e) {
+    _pressSub =
+        _element.onKeyPress.listen(_changeEventFunction((KeyboardEvent e) {
       if (e.which == 13) {
         e.preventDefault();
         return false;
       }
       // if cursor is at end, move it back one
-      if(_element.selectionStart == _element.maxLength) {
-        _element.selectionEnd = _element.selectionStart = _element.maxLength - 1;
+      if (_element.selectionStart == _element.maxLength) {
+        _element.selectionEnd =
+            _element.selectionStart = _element.maxLength - 1;
       }
       // delete the character the new one will replace and clobber selection if it exists
-      _element.setRangeText("", start: _element.selectionStart, end: _element.selectionStart+1, selectionMode: "start");
+      _element.setRangeText("",
+          start: _element.selectionStart,
+          end: _element.selectionStart + 1,
+          selectionMode: "start");
       return true;
     }, OverwriteEvent.EDIT));
   }
@@ -134,10 +147,10 @@ class OverwriteElement {
   // Set the input mode
   void setInputMode(OverwriteMode mode) {
     // don't do anything if we're already at that mode
-    if(mode == _mode) return;
+    if (mode == _mode) return;
     // update mode state
     _mode = mode;
-    if(mode == OverwriteMode.OVERWRITE) {
+    if (mode == OverwriteMode.OVERWRITE) {
       // resume event handlers
       _focusSub.resume();
       _pasteSub.resume();
@@ -156,20 +169,23 @@ class OverwriteElement {
 
   // Pad the contents of the input element to make the contents as wide as the element
   void _updateWidth() {
-
     // copy font style from element
     _widthEl.style.font = _element.getComputedStyle().font;
     // put element value in hidden element
     _widthEl.text = _element.value;
 
+    print('widening to ${_element.clientWidth}');
     // increase length of text in width element until it is as wide as input box
-    while(_widthEl.clientWidth < _element.clientWidth) {
+    while (_widthEl.clientWidth < _element.clientWidth) {
       _widthEl.text = "${_widthEl.text} ";
     }
+    print('calculated text is |${_widthEl.text}|');
     // if new text is longer, update the input element value
-    if(_widthEl.text.length > _element.value.length + 1) {
+    if (_widthEl.text.length > _element.value.length + 1) {
+      print('setting value of actual text area');
       // set the new value of input element
       _element.value = _widthEl.text.substring(0, _widthEl.text.length - 1);
+      print('new textarea value: |${_element.value}|');
       // set maxlength to length
       _element.maxLength = _element.value.length;
     }
