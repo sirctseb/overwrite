@@ -186,8 +186,8 @@ class OverwriteElement {
       // set the new value of input element
       _element.value = _widthEl.text.substring(0, _widthEl.text.length - 1);
       print('new textarea value: |${_element.value}|');
-      // set maxlength to length
-      _element.maxLength = _element.value.length;
     }
+    // set maxlength to length
+    _element.maxLength = _element.value.length;
   }
 }
