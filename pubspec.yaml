@@ -1,13 +1,13 @@
 name: overwrite
-version: 0.2.10-dev
+version: 0.2.10
 author: Christopher Best <bestchris@gmail.com>
 description: Overwrite mode for text area elements in Dart
 homepage: https://github.com/sirctseb/overwrite
 environment:
-  sdk: '>=0.8.10+6 <2.0.0'
+  sdk: '>=1.8.0 <2.0.0'
 documentation: http://sirctseb.github.io/overwrite
 dependencies:
-  logging: any
+  logging: ^0.11.2
 dev_dependencies:
   browser: '>=0.9.0 <0.10.0'
   unittest: '>=0.9.0 <0.10.0'
