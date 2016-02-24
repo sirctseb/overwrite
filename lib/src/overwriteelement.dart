@@ -126,6 +126,9 @@ class OverwriteElement {
     // On printable character, delete the character that will be overwritten
     _pressSub =
         _element.onKeyPress.listen(_changeEventFunction((KeyboardEvent e) {
+      if (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
+        return false;
+      }
       if (e.which == 13) {
         e.preventDefault();
         return false;
@@ -174,18 +177,14 @@ class OverwriteElement {
     // put element value in hidden element
     _widthEl.text = _element.value;
 
-    print('widening to ${_element.clientWidth}');
     // increase length of text in width element until it is as wide as input box
     while (_widthEl.clientWidth < _element.clientWidth) {
       _widthEl.text = "${_widthEl.text} ";
     }
-    print('calculated text is |${_widthEl.text}|');
     // if new text is longer, update the input element value
     if (_widthEl.text.length > _element.value.length + 1) {
-      print('setting value of actual text area');
       // set the new value of input element
       _element.value = _widthEl.text.substring(0, _widthEl.text.length - 1);
-      print('new textarea value: |${_element.value}|');
     }
     // set maxlength to length
     _element.maxLength = _element.value.length;
