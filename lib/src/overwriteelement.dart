@@ -97,7 +97,9 @@ class OverwriteElement {
       _logger.finer('setting spaces at ${_element.selectionEnd}');
       // add a string of spaces after the string that will be cut
       _element.setRangeText(fillString,
-          start: _element.selectionEnd, end: _element.selectionEnd, selectionMode: 'preserve');
+          start: _element.selectionEnd,
+          end: _element.selectionEnd,
+          selectionMode: 'preserve');
       return true;
     }, OverwriteEvent.EDIT));
 
@@ -115,7 +117,10 @@ class OverwriteElement {
             _logger.fine('cursor not at the beginning of the line');
             _logger.fine('adding space to replace whatever we\'re backspacing');
             // insert a space after the character that will be removed by the backspace
-            _element.setRangeText(" ");
+            _element.setRangeText(" ",
+                start: _element.selectionStart,
+                end: _element.selectionStart,
+                selectionMode: "preserve");
             return true;
           }
         } else if (e.which == 46) {
@@ -127,7 +132,8 @@ class OverwriteElement {
             // insert a space after the character that will be deleted by the delete
             _element.setRangeText(" ",
                 start: _element.selectionStart + 1,
-                end: _element.selectionStart + 1);
+                end: _element.selectionStart + 1,
+                selectionMode: "preserve");
             return true;
           }
         }
@@ -144,7 +150,9 @@ class OverwriteElement {
               " ".codeUnitAt(0)));
           // add a string of spaces after the string that will be deleted and with the same length
           _element.setRangeText(fillString,
-              start: _element.selectionEnd, end: _element.selectionEnd);
+              start: _element.selectionEnd,
+              end: _element.selectionEnd,
+              selectionMode: "preserveMode");
           return true;
         }
       }
@@ -155,7 +163,12 @@ class OverwriteElement {
     _pressSub =
         _element.onKeyPress.listen(_changeEventFunction((KeyboardEvent e) {
       // ignore arrow keys that fire this on firefox
-      if (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
+      if (e.keyCode == 37 ||
+          e.keyCode == 38 ||
+          e.keyCode == 39 ||
+          e.keyCode == 40 ||
+          e.keyCode == 46 ||
+          e.keyCode == 8) {
         return false;
       }
       // ignore when meta|ctrl that we get on firefox
