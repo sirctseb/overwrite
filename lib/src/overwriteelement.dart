@@ -2,7 +2,7 @@ part of overwrite;
 
 // A class to implement overwrite mode in a text area element
 class OverwriteElement {
-  static var _logger = new Logger('overwrite')..level = Level.FINEST;
+  static var _logger = new Logger('overwrite')..level = Level.OFF;
   // a map from TextAreaElement hashes to OverwriteElements
   static Map<int, OverwriteElement> _objects = new Map<int, OverwriteElement>();
   // a stream controller for change events on the element
