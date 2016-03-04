@@ -152,7 +152,7 @@ class OverwriteElement {
           _element.setRangeText(fillString,
               start: _element.selectionEnd,
               end: _element.selectionEnd,
-              selectionMode: "preserveMode");
+              selectionMode: "preserve");
           return true;
         }
       }
