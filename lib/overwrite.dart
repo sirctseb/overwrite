@@ -14,9 +14,14 @@ import 'package:logging_handlers/logging_handlers_shared.dart';
  * back to normal editing, and OverwriteMode.OVERWRITE to set overwrite mode.
  *
  * [onOverwriteEvent] provides a stream of events describing changes that are
- * made to the value of the element by typing ([OverwriteEvent.EDIT]), or
+ * made to the value of the element by typing ([OverwriteEvent.EDIT]), by
  * padding the element with spaces to fill the width of the element
- * ([OverwriteEvent.PAD]).
+ * ([OverwriteEvent.PAD]), or by explicitly setting the value
+ * ([OverwriteEvent.VALUE]).
+ *
+ * The value of the element can be set programmatically by assigning to
+ * [OverwriteElement.value]. Setting the value of the underlying TextAreaElement
+ * will circumvent the functionality of this class and should not be done.
  */
 // TODO delete padded spaces when setting to INSERT?
 class OverwriteElement {
@@ -229,6 +234,18 @@ class OverwriteElement {
     }, OverwriteEvent.EDIT));
   }
 
+  /// The contents of the element
+  String get value => _element.value;
+
+  /// Set the contents of the element
+  set value(String v) {
+    var oldValue = _element.value;
+    _element.value = v;
+    _updateWidth();
+    _streamController
+        .add(new OverwriteEvent(oldValue, v, OverwriteEvent.VALUE));
+  }
+
   /// Set the input mode. Pass [OverwriteMode.OVERWRITE] to set overwrite mode,
   /// or [OverwriteModel.INSERT] to return the element to input mode
   void setInputMode(OverwriteMode mode) {
@@ -278,12 +295,21 @@ class OverwriteElement {
   }
 }
 
-/// Event class for text change event stream
+/// A representation of a change to the contents of the element. The type will
+/// be [OverwriteEvent.PAD] if the only change was whitespace being added to
+/// fill the width of the element, [OverwriteEvent.EDIT] if the user modified
+/// the contents by typing, cutting, copying, or pasting, and
+/// [OverwriteEvent.VALUE] if the contents were set using the value accessor.
+///
+/// The contents of the element before the change are in [oldText], and the
+/// value after the change are in [newText].
 class OverwriteEvent {
   // fired when whitespace is added to fille the width of the element
   static final String PAD = 'pad';
   // fired when the user edits the contents
   static final String EDIT = 'edit';
+  // fired when value changed via the value setter
+  static final String VALUE = 'value';
 
   final String type;
   final String oldText;
