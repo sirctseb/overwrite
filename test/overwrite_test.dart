@@ -1,5 +1,4 @@
 import "dart:html";
-import "dart:async";
 import "package:unittest/unittest.dart";
 import "package:overwrite/overwrite.dart";
 

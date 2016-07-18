@@ -19,7 +19,7 @@ To subscribe to change made to the element value by typing, cutting, pasting,
 setting the value programmatically, or by whitespace being added:
 
 ```dart
-  overwrite.onOverwriteEvent((event) {
+  overwrite.onOverwriteEvent.listen((event) {
     // set text in model
   });
 ```
