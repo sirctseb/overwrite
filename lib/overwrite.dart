@@ -41,6 +41,7 @@ class OverwriteElement {
   StreamSubscription _cutSub;
   StreamSubscription _downSub;
   StreamSubscription _pressSub;
+  StreamSubscription _resizeSub;
 
   // The current insert mode
   OverwriteMode _mode = OverwriteMode.OVERWRITE;
@@ -232,6 +233,14 @@ class OverwriteElement {
           selectionMode: "start");
       return true;
     }, OverwriteEvent.EDIT));
+
+    // fix whitespace on browser resize
+    _resizeSub = window.onResize.listen(_changeEventFunction((e) {
+      _logger.fine('resize handler, updating width');
+      // pad contents
+      _updateWidth();
+      return true;
+    }, OverwriteEvent.PAD));
   }
 
   /// The contents of the element
@@ -260,6 +269,7 @@ class OverwriteElement {
       _cutSub.resume();
       _downSub.resume();
       _pressSub.resume();
+      _resizeSub.resume();
     } else {
       // pause event handlers
       _focusSub.pause();
@@ -267,6 +277,7 @@ class OverwriteElement {
       _cutSub.pause();
       _downSub.pause();
       _pressSub.pause();
+      _resizeSub.pause();
     }
   }
 
@@ -275,7 +286,7 @@ class OverwriteElement {
     // copy font style from element
     _widthEl.style.font = _element.getComputedStyle().font;
     // put element value in hidden element
-    _widthEl.text = _element.value;
+    _widthEl.text = _element.value.trimRight();
 
     _logger.fine('widening to ${_element.clientWidth}');
     // increase length of text in width element until it is as wide as input box
@@ -284,7 +295,7 @@ class OverwriteElement {
     }
     _logger.fine('calculated text is |${_widthEl.text}|');
     // if new text is longer, update the input element value
-    if (_widthEl.text.length > _element.value.length + 1) {
+    if (_widthEl.text.length > _element.value.trimRight().length) {
       _logger.fine('setting value of actual text area');
       // set the new value of input element
       _element.value = _widthEl.text.substring(0, _widthEl.text.length - 1);
