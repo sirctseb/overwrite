@@ -248,9 +248,22 @@ class OverwriteElement {
 
   /// Set the contents of the element
   set value(String v) {
+    // if this has focus, maintain cursor position across value change
+    var selectionStart, selectionEnd;
+    if (document.activeElement == _element) {
+      selectionStart = _element.selectionStart;
+      selectionEnd = _element.selectionEnd;
+    }
+
     var oldValue = _element.value;
     _element.value = v;
     _updateWidth();
+
+    if (selectionStart != null) {
+      _element.selectionStart = selectionStart;
+      _element.selectionEnd = selectionEnd;
+    }
+
     _streamController
         .add(new OverwriteEvent(oldValue, v, OverwriteEvent.VALUE));
   }
