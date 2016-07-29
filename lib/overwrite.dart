@@ -201,11 +201,11 @@ class OverwriteElement {
     _pressSub =
         _element.onKeyPress.listen(_changeEventFunction((KeyboardEvent e) {
       // ignore arrow keys that fire this on firefox
-      if (e.keyCode == 37 ||
-          e.keyCode == 38 ||
-          e.keyCode == 39 ||
-          e.keyCode == 40 ||
-          e.keyCode == 46 ||
+      if ((e.keyCode == 37 && e.which == 0) ||
+          (e.keyCode == 38 && e.which == 0) ||
+          (e.keyCode == 39 && e.which == 0) ||
+          (e.keyCode == 40 && e.which == 0) ||
+          (e.keyCode == 46 && e.which == 0) ||
           e.keyCode == 8) {
         return false;
       }
