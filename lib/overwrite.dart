@@ -111,7 +111,8 @@ class OverwriteElement {
     }, OverwriteEvent.PAD));
 
     // On paste, remove enough characters to make room for the text that will be pasted
-    _pasteSub = _element.onPaste.listen(_changeEventFunction((Event e) {
+    _pasteSub =
+        _element.onPaste.listen(_changeEventFunction((ClipboardEvent e) {
       _logger.fine('onPaste handler');
       _logger.fine('setting ${_element.selectionStart} to' +
           ' ${_element.selectionStart + e.clipboardData.getData("Text").length}' +
