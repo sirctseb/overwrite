@@ -25,7 +25,7 @@ import 'package:logging_handlers/logging_handlers_shared.dart';
  */
 // TODO delete padded spaces when setting to INSERT?
 class OverwriteElement {
-  static var _logger = new Logger('overwrite')..level = Level.OFF;
+  static var _logger = new Logger('overwrite');
   // a map from TextAreaElement hashes to OverwriteElements
   static Map<int, OverwriteElement> _objects = new Map<int, OverwriteElement>();
   // a stream controller for change events on the element
@@ -45,6 +45,15 @@ class OverwriteElement {
 
   // The current insert mode
   OverwriteMode _mode = OverwriteMode.OVERWRITE;
+
+  bool _suppressBackspace(KeyboardEvent event) {
+    return (event.which == 46 || // delete
+            event.which == 8) && // or backspace
+        ((_mac && (event.metaKey || event.altKey)) || // mac macro delete
+            (!_mac && (event.ctrlKey || event.altKey))); // win macro delete
+  }
+
+  bool get _mac => window.navigator.platform.contains('Mac');
 
   /// A stream of events that describes changes to the value of the element
   Stream<OverwriteEvent> get onOverwriteEvent => _streamController.stream;
@@ -145,35 +154,46 @@ class OverwriteElement {
     // On key down, add spaces for every character deleted on backspace and delete key
     _downSub =
         _element.onKeyDown.listen(_changeEventFunction((KeyboardEvent e) {
-      _logger.fine('keyDown handler');
+      _logger.fine('keyDown handler which: ${e.which}');
       // if start and end are equal, there is no selection
       if (_element.selectionStart == _element.selectionEnd) {
         _logger.fine('no selection');
         if (e.which == 8) {
-          _logger.fine('keydown is a backspace');
-          // don't do anything if cursor is at the end
-          if (_element.selectionStart != 0) {
-            _logger.fine('cursor not at the beginning of the line');
-            _logger.fine('adding space to replace whatever we\'re backspacing');
-            // insert a space after the character that will be removed by the backspace
-            _element.setRangeText(" ",
-                start: _element.selectionStart,
-                end: _element.selectionStart,
-                selectionMode: "preserve");
-            return true;
+          if (_suppressBackspace(e)) {
+            e.preventDefault();
+            return false;
+          } else {
+            _logger.fine('keydown is a backspace');
+            // don't do anything if cursor is at the end
+            if (_element.selectionStart != 0) {
+              _logger.fine('cursor not at the beginning of the line');
+              _logger
+                  .fine('adding space to replace whatever we\'re backspacing');
+              // insert a space after the character that will be removed by the backspace
+              _element.setRangeText(" ",
+                  start: _element.selectionStart,
+                  end: _element.selectionStart,
+                  selectionMode: "preserve");
+              return true;
+            }
           }
         } else if (e.which == 46) {
-          _logger.fine('keydown is delete');
-          // don't do anything if cursor is at the end
-          if (_element.selectionStart != _element.maxLength) {
-            _logger.fine('cursor is not at the end');
-            _logger.fine('inserting a space to replace what we\'re deleting');
-            // insert a space after the character that will be deleted by the delete
-            _element.setRangeText(" ",
-                start: _element.selectionStart + 1,
-                end: _element.selectionStart + 1,
-                selectionMode: "preserve");
-            return true;
+          if (_suppressBackspace(e)) {
+            e.preventDefault();
+            return false;
+          } else {
+            _logger.fine('keydown is delete');
+            // don't do anything if cursor is at the end
+            if (_element.selectionStart != _element.maxLength) {
+              _logger.fine('cursor is not at the end');
+              _logger.fine('inserting a space to replace what we\'re deleting');
+              // insert a space after the character that will be deleted by the delete
+              _element.setRangeText(" ",
+                  start: _element.selectionStart + 1,
+                  end: _element.selectionStart + 1,
+                  selectionMode: "preserve");
+              return true;
+            }
           }
         }
       } else {
@@ -201,6 +221,7 @@ class OverwriteElement {
     // On printable character, delete the character that will be overwritten
     _pressSub =
         _element.onKeyPress.listen(_changeEventFunction((KeyboardEvent e) {
+      _logger.finer('keypress which: ${e.which}, keyCode: ${e.keyCode}');
       // ignore arrow keys that fire this on firefox
       if ((e.keyCode == 37 && e.which == 0) ||
           (e.keyCode == 38 && e.which == 0) ||
@@ -211,7 +232,6 @@ class OverwriteElement {
         return false;
       }
       // ignore when meta|ctrl that we get on firefox
-      var _mac = window.navigator.platform.contains('Mac');
       if (_mac ? e.metaKey : e.ctrlKey) {
         return false;
       }
