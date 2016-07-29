@@ -4,7 +4,6 @@ library overwrite;
 import "dart:html";
 import "dart:async";
 import 'package:logging/logging.dart';
-import 'package:logging_handlers/logging_handlers_shared.dart';
 
 /**
  * A wrapper class for a [TextAreaElement] to support overwrite editing. Upon
