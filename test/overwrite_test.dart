@@ -1,8 +1,13 @@
 import "dart:html";
 import "package:unittest/unittest.dart";
 import "package:overwrite/overwrite.dart";
+import "package:logging/logging.dart";
+import "package:logging_handlers/logging_handlers_shared.dart";
 
 main() {
+  Logger.root.onRecord.listen(new LogPrintHandler());
+
+  hierarchicalLoggingEnabled = true;
   // get the textarea
   TextAreaElement _ta = querySelector("textarea");
 

@@ -8,6 +8,7 @@ environment:
 documentation: http://sirctseb.github.io/overwrite
 dependencies:
   logging: ^0.11.2
+  logging_handlers: ^0.8.0
 dev_dependencies:
   browser: '>=0.9.0 <0.10.0'
   unittest: '>=0.9.0 <0.10.0'
