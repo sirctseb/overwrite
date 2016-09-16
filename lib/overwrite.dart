@@ -257,8 +257,21 @@ class OverwriteElement {
     // fix whitespace on browser resize
     _resizeSub = window.onResize.listen(_changeEventFunction((e) {
       _logger.fine('resize handler, updating width');
+
+      // if this has focus, maintain cursor position across value change
+      var selectionStart, selectionEnd;
+      if (document.activeElement == _element) {
+        selectionStart = _element.selectionStart;
+        selectionEnd = _element.selectionEnd;
+      }
+
       // pad contents
       _updateWidth();
+
+      if (selectionStart != null) {
+        _element.selectionStart = selectionStart;
+        _element.selectionEnd = selectionEnd;
+      }
       return true;
     }, OverwriteEvent.PAD));
   }
