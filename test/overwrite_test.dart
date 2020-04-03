@@ -1,11 +1,12 @@
 import "dart:html";
-import "package:unittest/unittest.dart";
 import "package:overwrite/overwrite.dart";
 import "package:logging/logging.dart";
-import "package:logging_handlers/logging_handlers_shared.dart";
+import "package:test/test.dart";
 
 main() {
-  Logger.root.onRecord.listen(new LogPrintHandler());
+  Logger.root.onRecord.listen((record) {
+    print('${record.level.name}: ${record.time}: ${record.message}');
+  });
 
   // get the textarea
   TextAreaElement _ta = querySelector("textarea");
